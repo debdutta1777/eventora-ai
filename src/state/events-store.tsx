@@ -13,8 +13,16 @@ import { loadStoredEvents, saveEvents } from "@/lib/storage";
 import { createEventFromBrief, newId } from "@/lib/templates";
 import type { EventRecord } from "@/lib/types";
 
-export function EventsProvider({ children }: { children: ReactNode }) {
+export function EventsProvider({
+  children,
+  publicContent = false,
+}: {
+  children: ReactNode;
+  publicContent?: boolean;
+}) {
   const auth = useAuth();
+  // The static landing page needs no account context and can render before session restoration.
+  if (publicContent && (!auth.ready || auth.error)) return children;
   if (!auth.ready)
     return (
       <p role="status" className="p-6">

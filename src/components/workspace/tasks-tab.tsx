@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus } from "lucide-react";
 import { DueLabel, TaskStatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,11 @@ export function TasksTab({ event }: { event: EventRecord }) {
   const [category, setCategory] = useState<TaskCategory>(TASK_CATEGORIES[0]);
   const [dueDate, setDueDate] = useState(event.brief.date);
 
+  const [error, setError] = useState<{ field: "title" | "date"; message: string } | null>(null);
+  const errorSummary = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (error) errorSummary.current?.focus();
+  }, [error]);
   const sorted = [...event.tasks].sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     return a.dueDate.localeCompare(b.dueDate);
@@ -30,10 +35,19 @@ export function TasksTab({ event }: { event: EventRecord }) {
   return (
     <div className="mt-4 space-y-4">
       <form
+        noValidate
         className="flex flex-wrap items-end gap-2 rounded-xl border bg-card p-4"
         onSubmit={(e) => {
           e.preventDefault();
-          if (!title.trim() || !dateSchema.safeParse(dueDate).success) return;
+          if (!title.trim()) {
+            setError({ field: "title", message: "Give this task a name." });
+            return;
+          }
+          if (!dateSchema.safeParse(dueDate).success) {
+            setError({ field: "date", message: "Choose a valid task due date." });
+            return;
+          }
+          setError(null);
           addTask(event.id, { title: title.trim(), category, dueDate });
           setTitle("");
         }}
@@ -44,10 +58,15 @@ export function TasksTab({ event }: { event: EventRecord }) {
           </Label>
           <Input
             id="task-title"
+            aria-invalid={error?.field === "title"}
+            aria-describedby={error?.field === "title" ? "task-form-error" : undefined}
             className="mt-1"
             placeholder="Book the DJ"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setError(null);
+            }}
           />
         </div>
         <div>
@@ -73,16 +92,32 @@ export function TasksTab({ event }: { event: EventRecord }) {
           </Label>
           <Input
             id="task-due"
+            aria-invalid={error?.field === "date"}
+            aria-describedby={error?.field === "date" ? "task-form-error" : undefined}
             type="date"
             className="mt-1"
             value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            onChange={(e) => {
+              setDueDate(e.target.value);
+              setError(null);
+            }}
           />
         </div>
         <Button type="submit">
           <Plus className="size-4" aria-hidden />
           Add task
         </Button>
+        {error && (
+          <p
+            ref={errorSummary}
+            id="task-form-error"
+            role="alert"
+            tabIndex={-1}
+            className="w-full text-sm text-destructive"
+          >
+            {error.message}
+          </p>
+        )}
       </form>
 
       <ul className="divide-y rounded-xl border bg-card">
@@ -97,8 +132,8 @@ export function TasksTab({ event }: { event: EventRecord }) {
               <span
                 className={
                   task.completed
-                    ? "break-words text-sm text-muted-foreground line-through"
-                    : "break-words text-sm text-foreground"
+                    ? "min-w-0 [overflow-wrap:anywhere] text-sm text-muted-foreground line-through"
+                    : "min-w-0 [overflow-wrap:anywhere] text-sm text-foreground"
                 }
               >
                 {task.title}

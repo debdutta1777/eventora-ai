@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { daysUntil, taskState } from "@/lib/format";
+import { daysUntil, taskState, formatISODate } from "@/lib/format";
 import { VENDOR_STATUS_LABELS, type Task, type VendorStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -67,8 +67,17 @@ export function VendorStatusBadge({ status }: { status: VendorStatus }) {
 export function DueLabel({ iso }: { iso: string }) {
   const days = daysUntil(iso);
   if (Number.isNaN(days)) return null;
-  if (days === 0) return <span>Due today</span>;
-  if (days === 1) return <span>Due tomorrow</span>;
-  if (days < 0) return <span>{-days} days overdue</span>;
-  return <span>In {days} days</span>;
+  const relative =
+    days === 0
+      ? "Due today"
+      : days === 1
+        ? "Due tomorrow"
+        : days < 0
+          ? `${-days} days overdue`
+          : `In ${days} days`;
+  return (
+    <time dateTime={iso}>
+      {formatISODate(iso)} · {relative}
+    </time>
+  );
 }

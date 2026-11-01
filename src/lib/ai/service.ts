@@ -3,6 +3,7 @@ import { eventSchema } from "../schemas.ts";
 import type { EventRecord } from "../types.ts";
 import { materializeAIPlan, validateVendorChecklist, type PlanRun, type AIPlan } from "./plan.ts";
 import { PlannerError, type ModelProvider } from "./gemini.ts";
+import { readPlanningBody } from "./request-body.ts";
 
 export interface PlannerDatabase {
   event(userId: string, eventId: string): Promise<{ record: EventRecord; revision: number } | null>;
@@ -63,10 +64,7 @@ export function createPlannerHandler(deps: Dependencies) {
       const userId = await deps.authenticate(token);
       if (!userId)
         throw new PlannerError("unauthenticated", "Your session expired. Sign in again.", 401);
-      if (Number(request.headers.get("content-length") ?? 0) > 10000)
-        throw new PlannerError("invalid_request", "Request too large.", 413);
-      const text = await request.text();
-      if (text.length > 10000) throw new PlannerError("invalid_request", "Request too large.", 413);
+      const text = await readPlanningBody(request);
       const input = requestSchema.parse(JSON.parse(text));
       if (input.action === "status") {
         const run = await deps.database.status(userId, input.runId);

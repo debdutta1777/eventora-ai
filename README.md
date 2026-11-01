@@ -13,7 +13,7 @@ An event planning assistant for weddings, birthdays and community events, built 
 
 ## Development
 
-Requires Node.js 22 or newer.
+Requires Node.js 22.16+ (22 LTS recommended).
 
 ```sh
 npm ci
@@ -23,17 +23,18 @@ npm run dev
 ```sh
 npm run lint
 npm run typecheck
-npm test
+npm run test:coverage
 npm run build
 ```
 
-`npm run check` requires zero-warning ESLint, strict TypeScript (including unused locals and parameters), all tests and a production build. The automated suite contains 111 tests across 19 files using synthetic fixtures, including actual Postgres migration tests through PGlite. A comprehensive assistive-technology audit remains a separate release check.
+`npm run check` requires zero-warning ESLint, strict TypeScript (including unused locals and parameters), coverage-gated tests and a production build. The automated suite contains 183 tests across 27 files using synthetic fixtures, including actual Postgres migration tests through PGlite. A comprehensive assistive-technology audit remains a separate release check.
 
 The frontend supports public Supabase configuration through the checked-in development defaults or `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` overrides. Set `VITE_DEMO_ONLY=true` to disable accounts.
 
 ## Code organization
 
-- `src/routes`: page composition, navigation and route metadata.
+- `src/routes`: route metadata and parameter wiring; page UI lives in `src/components/pages`.
+- `src/components/create-event`: focused wizard steps with shared typed validation in `src/lib/event-form.ts`.
 - `src/components/workspace`: focused Overview, Budget, Tasks, Vendors and Ideas tabs, plus expense entry.
 - `src/state/*-context.ts`: typed context contracts and consumer hooks; provider components remain in separate TSX modules.
 - `src/lib`: money/date rules, schema validation, templates and deterministic replanning.
@@ -42,6 +43,14 @@ The frontend supports public Supabase configuration through the checked-in devel
 - `supabase/migrations`: versioned database constraints, policies and atomic operations.
 
 UI components call the state/repository contracts; provider credentials and model calls stay behind the authenticated Edge Function. Tests use synthetic fixtures and mocked provider responses; CI does not require a Gemini key.
+
+## Verification scope
+
+`npm run test:coverage` measures `src/lib` and `src/state` (excluding test files and public project constants); it does not claim whole-application or end-to-end coverage. Current measured coverage: 89.65% statements, 81.32% branches, 93.47% functions and 92.77% lines. CI enforces minimums of 88%, 80%, 90% and 90%, respectively.
+
+Automated axe checks cover the five workspace tabs and wizard/error states. Because jsdom cannot measure visual layout, those checks exclude rendered color contrast; 28 separate numerical checks cover declared light/dark text pairs, input boundaries and focus indicators. These checks complement browser QA and do not certify full WCAG compliance.
+
+Dependency verification uses `npm audit --audit-level=moderate` in CI. The audited lockfile currently reports no known vulnerabilities, including development dependencies. The minimatch override selects the patched release for the lint toolchain; it is exercised by the zero-warning lint gate. There is no live provider call in CI.
 
 ## Server setup
 
@@ -59,10 +68,10 @@ See [replanning behavior and tests](docs/REPLANNING.md) for allocation rules, st
 
 ## Repository workflow
 
-This repository contains the consolidated Eventora AI application on main, including Phase 7 maintainability improvements. It was migrated from the development snapshot 7efe66eb0f6040d552ee5380c7ae692c3d6f1a06. The original repository and its phase PRs remain unchanged. This repository has fresh history and is not automatically connected to the old Lovable project.
+This repository contains the consolidated Eventora AI application on main, including the final hardening and verification pass. It was migrated from the development snapshot 7efe66eb0f6040d552ee5380c7ae692c3d6f1a06. The original repository and its phase PRs remain unchanged. This repository has fresh history and is not automatically connected to the old Lovable project.
 
 Use npm and package-lock.json for dependency installation. The UI, templates, account storage, Gemini integration, migrations, tests and CI workflow are included.
 
 ## Submission readiness
 
-See [rubric mapping and release checklist](docs/SUBMISSION.md). Phase 7 adds focused workspace components, separate context contracts and providers, zero-warning lint in CI, bounded-polling lifecycle tests and accessible expense validation. Verify each deployment on its final origin; comprehensive accessibility testing remains a release gate.
+See [rubric mapping and release checklist](docs/SUBMISSION.md). The final pass removes unused starter components and dependencies, upgrades vulnerable packages, separates page UI from route metadata, adds coverage thresholds and accessibility checks, and hardens request-body limits and hosting headers. Verify each deployment on its final origin; comprehensive accessibility testing remains a release gate.

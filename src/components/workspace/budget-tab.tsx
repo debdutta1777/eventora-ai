@@ -95,7 +95,9 @@ export function BudgetTab({ event }: { event: EventRecord }) {
                 <ul className="divide-y">
                   {cat.expenses.map((expense) => (
                     <li key={expense.id} className="flex items-center justify-between gap-3 py-2">
-                      <span className="text-sm text-foreground">{expense.label}</span>
+                      <span className="min-w-0 break-words text-sm text-foreground">
+                        {expense.label}
+                      </span>
                       <span className="flex items-center gap-2 text-sm tabular-nums text-foreground">
                         {formatINR(expense.amountPaise)}
                         <Button

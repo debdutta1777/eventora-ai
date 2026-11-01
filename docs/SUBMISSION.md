@@ -6,16 +6,16 @@ Eventora addresses weddings, birthdays and community events through budgets, dat
 
 | Criterion | Implementation evidence | Repeatable checks |
 | --- | --- | --- |
-| Code quality | Typed models, shared schemas, isolated account repository, provider/service/domain separation, shared allocation rules | Strict TypeScript; zero-warning whole-repository ESLint in CI; versioned migrations and npm lockfile |
+| Code quality | Typed models, shared schemas, focused wizard steps, isolated account repository, page/route separation, provider/service/domain separation, shared allocation rules and unused-template removal | Strict TypeScript; zero-warning whole-repository ESLint in CI; versioned migrations and npm lockfile |
 | Problem alignment | Three event types; budgets and contingency; timelines; vendor action checklists; ideas; reviewed replanning and AI proposals | Synthetic template, domain, service, UI and persistence tests |
-| Security | Owner-based RLS, explicit grants, verified identity, server-only provider key, expected revisions, bounded requests | PGlite isolation/grant tests and service authorization tests |
+| Security | Owner-based RLS, explicit grants, verified identity, server-only provider key, expected revisions, bounded requests | PGlite isolation/grant tests, service authorization tests, streamed request byte limits, safe error responses and dependency audit |
 | Efficiency | Integer money, bounded generation/retries, paginated event reads, explicit saves | Request bounds, quota, duplicate request and save tests; no load benchmark claimed |
-| Testing | Vitest and Testing Library; actual migrations executed in PGlite; CI workflow | Run npm run check; CI runs on pull requests and main pushes |
-| Accessibility | Skip link, named navigation, current-page semantics, mobile drawer description, semantic card headings, step/error focus, form submission, reduced-motion support and wrapping task titles | Wizard focus/review tests; manual keyboard and viewport checks before release |
+| Testing | Vitest and Testing Library; actual migrations executed in PGlite; CI workflow with explicit coverage thresholds | Run npm run check; CI runs on pull requests and main pushes |
+| Accessibility | Skip link, named navigation, current-page semantics, mobile drawer description, semantic card headings, step/error focus, form submission, reduced-motion support and wrapping task titles | Axe checks, 28 declared-theme contrast checks and wizard/error focus tests; manual viewport/assistive technology checks remain necessary |
 
 ## Local verification
 
-Use Node.js 22+, npm ci, then npm run check. The automated suite has 111 tests across 19 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel wizard keyboard focus, accessible expense error recovery, bounded polling and unmount cancellation. No Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
+Use Node.js 22+, npm ci, then npm run check. The automated suite has 183 tests across 27 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel wizard keyboard focus, accessible expense error recovery, bounded polling and unmount cancellation. Core coverage is 92.77% of lines and 81.32% of branches, scoped to src/lib and src/state. CI enforces coverage thresholds and zero-warning lint; no Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
 
 ## Demonstration sequence
 

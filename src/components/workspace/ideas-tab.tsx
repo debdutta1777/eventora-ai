@@ -25,6 +25,7 @@ export function IdeasTab({ event }: { event: EventRecord }) {
                 size="sm"
                 onClick={() => toggleIdeaSaved(event.id, idea.id)}
                 aria-pressed={idea.saved}
+                aria-label={`${idea.saved ? "Unsave" : "Save"} idea: ${idea.title}`}
               >
                 <Star className="size-4" aria-hidden />
                 {idea.saved ? "Saved" : "Save"}

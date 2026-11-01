@@ -17,7 +17,7 @@ export function OverviewTab({ event }: { event: EventRecord }) {
 
   return (
     <div className="mt-4 space-y-6">
-      <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Total budget", value: formatINR(totals.totalBudgetPaise) },
           { label: "Spent", value: formatINR(totals.spentPaise) },
@@ -25,13 +25,13 @@ export function OverviewTab({ event }: { event: EventRecord }) {
           { label: "Guests", value: String(event.brief.guestCount) },
         ].map((stat) => (
           <Card key={stat.label}>
-            <CardHeader className="pb-2">
-              <CardDescription>{stat.label}</CardDescription>
-              <CardTitle className="font-display text-2xl tabular-nums">{stat.value}</CardTitle>
-            </CardHeader>
+            <dl className="space-y-2 p-6">
+              <dt className="text-sm text-muted-foreground">{stat.label}</dt>
+              <dd className="font-display text-2xl font-semibold tabular-nums">{stat.value}</dd>
+            </dl>
           </Card>
         ))}
-      </dl>
+      </div>
 
       {totals.overspentPaise > 0 && (
         <p
@@ -112,7 +112,15 @@ export function OverviewTab({ event }: { event: EventRecord }) {
                       {confirmed}/{group.items.length}
                     </span>
                   </div>
-                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    role="progressbar"
+                    aria-label={`${group.name} vendor checklist confirmed`}
+                    aria-valuemin={0}
+                    aria-valuemax={group.items.length || 1}
+                    aria-valuenow={confirmed}
+                    aria-valuetext={`${confirmed} of ${group.items.length} confirmed`}
+                    className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted"
+                  >
                     <div
                       className="h-full rounded-full bg-primary"
                       style={{

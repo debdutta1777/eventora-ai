@@ -39,3 +39,6 @@ dist-ssr
 # Supabase local CLI state
 supabase/.temp/
 supabase/.branches/
+
+# Local verification reports
+coverage/

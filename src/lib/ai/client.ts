@@ -16,6 +16,11 @@ export const planRunSchema = z.object({
   model: z.string(),
 });
 export type ClientPlanRun = z.infer<typeof planRunSchema>;
+const runResponseSchema = z.object({ run: planRunSchema });
+const savedResponseSchema = z.object({
+  record: eventSchema,
+  revision: z.number().int().safe().positive(),
+});
 async function invoke(body: Record<string, unknown>): Promise<unknown> {
   const client = getCloudClient();
   if (!client) throw new Error("Sign in to use AI planning.");
@@ -40,22 +45,15 @@ export async function requestAIPlan(
   instruction: string,
   requestKey: string,
 ): Promise<ClientPlanRun> {
-  return planRunSchema.parse(
-    (
-      (await invoke({ action: "generate", eventId, revision, instruction, requestKey })) as {
-        run: unknown;
-      }
-    ).run,
-  );
+  return runResponseSchema.parse(
+    await invoke({ action: "generate", eventId, revision, instruction, requestKey }),
+  ).run;
 }
 export async function readAIPlan(runId: string): Promise<ClientPlanRun> {
-  return planRunSchema.parse(((await invoke({ action: "status", runId })) as { run: unknown }).run);
+  return runResponseSchema.parse(await invoke({ action: "status", runId })).run;
 }
 export async function applyAIPlan(runId: string) {
-  const data = (await invoke({ action: "apply", runId })) as { record: unknown; revision: number };
-  if (!Number.isSafeInteger(data.revision) || data.revision < 1)
-    throw new Error("Invalid saved proposal response.");
-  return { record: eventSchema.parse(data.record), revision: data.revision };
+  return savedResponseSchema.parse(await invoke({ action: "apply", runId }));
 }
 export async function listAIPlans(eventId: string): Promise<ClientPlanRun[]> {
   const client = getCloudClient();
