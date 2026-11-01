@@ -15,7 +15,7 @@ Eventora addresses weddings, birthdays and community events through budgets, dat
 
 ## Local verification
 
-Use Node.js 22+, npm ci, then npm run check. The automated suite has 98 tests across 17 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel and wizard keyboard focus. No Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
+Use Node.js 22+, npm ci, then npm run check. The automated suite has 101 tests across 18 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel and wizard keyboard focus. No Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
 
 ## Demonstration sequence
 

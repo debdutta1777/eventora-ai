@@ -4,7 +4,7 @@ The AI Planner uses the authenticated Supabase planner Edge Function. Credential
 
 ## Configuration
 
-In your Supabase project, set GEMINI_API_KEY in Edge Functions → Secrets. GEMINI_MODEL optionally overrides the default gemini-3.5-flash-lite. APP_ORIGINS must include the frontend's actual origin; development defaults include http://terminal.local:4173, http://localhost:5173 and http://localhost:4173.
+In your Supabase project, set GEMINI_API_KEY in Edge Functions → Secrets. GEMINI_MODEL optionally overrides the default gemini-3.5-flash-lite. The default origin allowlist includes https://eventora-ai-phi.vercel.app, http://terminal.local:4173, http://localhost:5173 and http://localhost:4173. APP_ORIGINS, when set, replaces these defaults; include every frontend origin you intend to allow. Use exact origins without paths or trailing slashes.
 
 Deploy supabase/functions/planner/index.ts with deno.json and its relative src/lib imports. Keep JWT verification enabled. Apply all SQL migrations in order before using generation or apply. The checked-in public development configuration continues to use the existing Eventora project; this repository migration does not create or copy a database or server secrets.
 

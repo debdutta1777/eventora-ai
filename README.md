@@ -26,7 +26,7 @@ npm test
 npm run build
 ```
 
-`npm run check` runs all three checks. The current local automated suite contains 98 tests across 17 files using synthetic fixtures, including actual Postgres migration tests through PGlite. Whole-repository lint and a comprehensive assistive-technology audit remain separate checks.
+`npm run check` runs all three checks. The current local automated suite contains 101 tests across 18 files using synthetic fixtures, including actual Postgres migration tests through PGlite. Whole-repository lint and a comprehensive assistive-technology audit remain separate checks.
 
 The frontend supports public Supabase configuration through the checked-in development defaults or `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` overrides. Set `VITE_DEMO_ONLY=true` to disable accounts.
 
@@ -34,7 +34,7 @@ The frontend supports public Supabase configuration through the checked-in devel
 
 Apply the versioned SQL migrations under `supabase/migrations` in order. Deploy `supabase/functions/planner` with its referenced TypeScript modules and `deno.json`. Keep JWT verification enabled.
 
-Set `GEMINI_API_KEY` only in Supabase Edge Function Secrets. The default model is `gemini-3.5-flash-lite`; `GEMINI_MODEL` optionally overrides it. Configure `APP_ORIGINS` for the actual frontend origin before hosting. Never place provider or service-role keys in browser code, Git, chat or `VITE_*` variables.
+Set `GEMINI_API_KEY` only in Supabase Edge Function Secrets. The default model is `gemini-3.5-flash-lite`; `GEMINI_MODEL` optionally overrides it. The default origin allowlist includes `https://eventora-ai-phi.vercel.app` and local development origins. `APP_ORIGINS` replaces the defaults for another deployment. Never place provider or service-role keys in browser code, Git, chat or `VITE_*` variables.
 
 The provider adapter bounds generation attempts, validates all output locally, and supports a JSON-mode compatibility retry after constrained-schema rejection. Template data is never presented as a successful provider response.
 

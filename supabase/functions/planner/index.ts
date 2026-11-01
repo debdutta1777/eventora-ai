@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createPlannerHandler } from "../../../src/lib/ai/service.ts";
 import { createPlannerDatabase } from "../../../src/lib/ai/supabase-adapter.ts";
 import { createGeminiProvider } from "../../../src/lib/ai/gemini.ts";
+import { plannerOrigins } from "../../../src/lib/ai/origins.ts";
 
 declare const EdgeRuntime: { waitUntil(task: Promise<unknown>): void };
 const url = Deno.env.get("SUPABASE_URL")!;
@@ -13,13 +14,7 @@ const admin = createClient(url, service, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 const auth = createClient(url, anon, { auth: { persistSession: false, autoRefreshToken: false } });
-const origins = (
-  Deno.env.get("APP_ORIGINS") ??
-  "http://terminal.local:4173,http://localhost:5173,http://localhost:4173"
-)
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
+const origins = plannerOrigins(Deno.env.get("APP_ORIGINS"));
 Deno.serve(
   createPlannerHandler({
     model,
