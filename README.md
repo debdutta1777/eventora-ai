@@ -27,7 +27,7 @@ npm run test:coverage
 npm run build
 ```
 
-`npm run check` requires zero-warning ESLint, strict TypeScript (including unused locals and parameters), coverage-gated tests and a production build. The automated suite contains 183 tests across 27 files using synthetic fixtures, including actual Postgres migration tests through PGlite. A comprehensive assistive-technology audit remains a separate release check.
+`npm run check` requires zero-warning ESLint, strict TypeScript (including unused locals and parameters), coverage-gated tests and a production build. The automated suite contains 185 tests across 27 files using synthetic fixtures, including actual Postgres migration tests through PGlite. A comprehensive assistive-technology audit remains a separate release check.
 
 The frontend supports public Supabase configuration through the checked-in development defaults or `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` overrides. Set `VITE_DEMO_ONLY=true` to disable accounts.
 

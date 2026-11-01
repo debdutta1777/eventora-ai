@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useEvents } from "@/state/events-context";
 import { eventFingerprint } from "@/lib/cloud/events-repository";
+import { validateVendorChecklist } from "@/lib/ai/plan";
 import {
   applyAIPlan,
   listAIPlans,
@@ -30,6 +31,22 @@ const failureMessage = (code: string | null) =>
     : code === "generation_expired"
       ? "Generation did not finish in time. You can request a fresh proposal."
       : "The proposal could not be generated or validated. Your current plan is unchanged; please try again later.";
+
+function supportsChecklistReview(run: ClientPlanRun | null): boolean {
+  if (!run?.proposal || !run.proposed_record) return true;
+  try {
+    validateVendorChecklist(run.proposal);
+    const additional = run.proposed_record.vendorGroups
+      .filter((group) => !run.base_record.vendorGroups.some((old) => old.id === group.id))
+      .flatMap((group) =>
+        group.items.map((item) => ({ category: group.name, title: item.title, note: item.note })),
+      );
+    validateVendorChecklist({ ...run.proposal, vendors: additional });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export function AIPlanner({ event }: { event: EventRecord }) {
   const { mode, getSaveState, getRevision, acceptAIResult } = useEvents();
@@ -96,6 +113,7 @@ export function AIPlanner({ event }: { event: EventRecord }) {
   }, [runId, runStatus, polling, loadHistory]);
   const baseline = run?.base_record;
   const proposed = run?.proposed_record;
+  const checklistSupported = supportsChecklistReview(run);
   const stale =
     !!run &&
     (run.base_revision !== getRevision(event.id) ||
@@ -207,7 +225,13 @@ export function AIPlanner({ event }: { event: EventRecord }) {
             {failureMessage(run.error_code)}
           </p>
         )}
-        {run?.status === "ready" && baseline && proposed && run.proposal && (
+        {run?.status === "ready" && !checklistSupported && (
+          <p role="alert" className="text-sm text-destructive">
+            This older proposal does not meet the current vendor checklist rules. Generate a fresh
+            proposal; your saved event is unchanged.
+          </p>
+        )}
+        {run?.status === "ready" && checklistSupported && baseline && proposed && run.proposal && (
           <section
             aria-label="AI proposal review"
             className="space-y-4 rounded-xl border bg-muted/30 p-4"
@@ -375,11 +399,25 @@ export function AIPlanner({ event }: { event: EventRecord }) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      setRun(item);
-                      setPolling(true);
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusy(true);
+                      setRun(null);
                       setError("");
                       setNotice("");
+                      try {
+                        const current = await readAIPlan(item.id);
+                        setRun(current);
+                        setPolling(true);
+                        if (current.status === "applied")
+                          setNotice("This proposal has already been applied to your account.");
+                      } catch {
+                        setError(
+                          "This proposal could not be recovered. Your saved event is unchanged.",
+                        );
+                      } finally {
+                        setBusy(false);
+                      }
                     }}
                   >
                     Open proposal

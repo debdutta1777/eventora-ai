@@ -48,6 +48,28 @@ const prepared = () => {
   return { event, run };
 };
 describe("proposal review UI", () => {
+  it.each(["proposal", "materialized record"])(
+    "blocks historical supplier claims in the %s before displaying or applying them",
+    async (source) => {
+      const { event, run } = prepared();
+      const legacy = structuredClone(run);
+      if (source === "proposal") {
+        legacy.proposal.vendors[0]!.title = "Example Vendor Company";
+      } else {
+        legacy.proposed_record.vendorGroups.at(-1)!.items[0]!.title = "Example Vendor Company";
+      }
+      mocks.list.mockResolvedValue([legacy]);
+      mocks.read.mockResolvedValue(legacy);
+      render(<AIPlanner event={event} />);
+      fireEvent.click(await screen.findByRole("button", { name: "Open proposal" }));
+      await screen.findByRole("alert");
+      expect(screen.getByRole("alert")).toHaveTextContent("current vendor checklist rules");
+      expect(screen.queryByText(/Example Vendor Company/)).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Apply proposal" })).not.toBeInTheDocument();
+      expect(mocks.read).toHaveBeenCalledWith(run.id);
+      expect(mocks.apply).not.toHaveBeenCalled();
+    },
+  );
   it("shows all four sections and only applies after explicit review", async () => {
     const { event, run } = prepared();
     mocks.request.mockResolvedValue(run);
