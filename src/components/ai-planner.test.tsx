@@ -17,7 +17,7 @@ vi.mock("@/lib/ai/client", () => ({
   listAIPlans: mocks.list,
   applyAIPlan: mocks.apply,
 }));
-vi.mock("@/state/events-store", () => ({
+vi.mock("@/state/events-context", () => ({
   useEvents: () => ({
     mode: mocks.mode,
     getSaveState: () => "saved",
@@ -106,5 +106,40 @@ describe("proposal review UI", () => {
     await act(() => vi.advanceTimersByTimeAsync(1000));
     expect(screen.getByRole("button", { name: "Apply proposal" })).toBeInTheDocument();
     expect(mocks.read).toHaveBeenCalledTimes(1);
+  });
+  it("bounds polling even when every status response is a new generating object", async () => {
+    vi.useFakeTimers();
+    const { event, run } = prepared();
+    const generating = { ...run, status: "generating", proposal: null, proposed_record: null };
+    mocks.request.mockResolvedValue(generating);
+    mocks.read.mockImplementation(async () => ({ ...generating }));
+    render(<AIPlanner event={event} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Generate AI proposal" }));
+    });
+    await act(() => vi.advanceTimersByTimeAsync(120_000));
+    expect(mocks.read).toHaveBeenCalledTimes(60);
+    expect(screen.getByText(/taking longer than expected/)).toBeInTheDocument();
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    expect(mocks.read).toHaveBeenCalledTimes(60);
+    expect(mocks.apply).not.toHaveBeenCalled();
+  });
+
+  it("cancels pending polling when the workspace unmounts", async () => {
+    vi.useFakeTimers();
+    const { event, run } = prepared();
+    mocks.request.mockResolvedValue({
+      ...run,
+      status: "generating",
+      proposal: null,
+      proposed_record: null,
+    });
+    const view = render(<AIPlanner event={event} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Generate AI proposal" }));
+    });
+    view.unmount();
+    await act(() => vi.advanceTimersByTimeAsync(10_000));
+    expect(mocks.read).not.toHaveBeenCalled();
   });
 });

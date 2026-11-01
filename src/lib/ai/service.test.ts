@@ -6,8 +6,8 @@ let event: ReturnType<typeof aiEvent>;
 let run: ReturnType<typeof runFixture>;
 let tasks: Promise<void>[];
 let db: PlannerDatabase;
-let authenticate = vi.fn<(token: string) => Promise<string | null>>();
-let generate = vi.fn<ModelProvider["generate"]>();
+const authenticate = vi.fn<(token: string) => Promise<string | null>>();
+const generate = vi.fn<ModelProvider["generate"]>();
 beforeEach(() => {
   event = aiEvent();
   run = runFixture(event);

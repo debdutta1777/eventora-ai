@@ -1,12 +1,13 @@
 import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
-import { EventsProvider, useEvents } from "./events-store";
+import { EventsProvider } from "./events-store";
+import { useEvents } from "./events-context";
 import { createEventFromBrief } from "@/lib/templates";
 import { loadStoredEvents, saveEvents } from "@/lib/storage";
 import { eventFingerprint, type StoredEvent } from "@/lib/cloud/events-repository";
 import { todayISO } from "@/lib/format";
 const mocks = vi.hoisted(() => ({ userId: "alice", list: vi.fn(), save: vi.fn() }));
-vi.mock("./auth", () => ({
+vi.mock("./auth-context", () => ({
   useAuth: () => ({
     ready: true,
     error: null,

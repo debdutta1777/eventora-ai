@@ -1,19 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session } from "@supabase/supabase-js";
+import { useEffect, useState, type ReactNode } from "react";
+import { AuthContext, type AuthState } from "./auth-context";
 import { cloudConfigured, getCloudClient } from "@/lib/cloud/client";
 
-interface AuthState {
-  ready: boolean;
-  session: Session | null;
-  error: string | null;
-  configured: boolean;
-}
-const AuthContext = createContext<AuthState>({
-  ready: true,
-  session: null,
-  error: null,
-  configured: false,
-});
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     ready: false,
@@ -63,4 +51,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
-export const useAuth = () => useContext(AuthContext);

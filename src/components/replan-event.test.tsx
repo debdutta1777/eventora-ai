@@ -3,7 +3,7 @@ import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import { ReplanEvent } from "./replan-event";
 import { aiEvent } from "@/test/ai-fixtures";
 const mocks = vi.hoisted(() => ({ apply: vi.fn(), saving: false }));
-vi.mock("@/state/events-store", () => ({
+vi.mock("@/state/events-context", () => ({
   useEvents: () => ({
     applyReplan: mocks.apply,
     mode: "account",

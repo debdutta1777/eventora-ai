@@ -6,7 +6,7 @@ Eventora addresses weddings, birthdays and community events through budgets, dat
 
 | Criterion | Implementation evidence | Repeatable checks |
 | --- | --- | --- |
-| Code quality | Typed models, shared schemas, isolated account repository, provider/service/domain separation, shared allocation rules | TypeScript; focused ESLint checks; versioned migrations and npm lockfile |
+| Code quality | Typed models, shared schemas, isolated account repository, provider/service/domain separation, shared allocation rules | Strict TypeScript; zero-warning whole-repository ESLint in CI; versioned migrations and npm lockfile |
 | Problem alignment | Three event types; budgets and contingency; timelines; vendor action checklists; ideas; reviewed replanning and AI proposals | Synthetic template, domain, service, UI and persistence tests |
 | Security | Owner-based RLS, explicit grants, verified identity, server-only provider key, expected revisions, bounded requests | PGlite isolation/grant tests and service authorization tests |
 | Efficiency | Integer money, bounded generation/retries, paginated event reads, explicit saves | Request bounds, quota, duplicate request and save tests; no load benchmark claimed |
@@ -15,7 +15,7 @@ Eventora addresses weddings, birthdays and community events through budgets, dat
 
 ## Local verification
 
-Use Node.js 22+, npm ci, then npm run check. The automated suite has 101 tests across 18 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel and wizard keyboard focus. No Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
+Use Node.js 22+, npm ci, then npm run check. The automated suite has 111 tests across 19 files using synthetic fixtures. It exercises all three event templates, exact fractional and tiny-budget allocation, safe integer limits, ownership isolation, revision conflicts, AI output validation, quotas, lock enforcement, preview/apply/cancel wizard keyboard focus, accessible expense error recovery, bounded polling and unmount cancellation. No Gemini credentials are needed for these tests. CI is configured in .github/workflows/checks.yml; local success does not assert hosted CI execution.
 
 ## Demonstration sequence
 

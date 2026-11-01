@@ -3,7 +3,7 @@ import { replanEvent } from "@/lib/replanning";
 import { eventFingerprint } from "@/lib/cloud/events-repository";
 import { formatINR, paiseToRupeeInput, rupeesToPaise } from "@/lib/format";
 import type { EventRecord } from "@/lib/types";
-import { useEvents } from "@/state/events-store";
+import { useEvents } from "@/state/events-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

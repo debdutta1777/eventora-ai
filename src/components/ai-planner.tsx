@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useEvents } from "@/state/events-store";
+import { useEvents } from "@/state/events-context";
 import { eventFingerprint } from "@/lib/cloud/events-repository";
 import {
   applyAIPlan,
@@ -53,14 +53,16 @@ export function AIPlanner({ event }: { event: EventRecord }) {
   useEffect(() => {
     void loadHistory();
   }, [loadHistory]);
+  const runId = run?.id;
+  const runStatus = run?.status;
   useEffect(() => {
-    if (!run || run.status !== "generating" || !polling) return;
+    if (!runId || runStatus !== "generating" || !polling) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let count = 0;
     const poll = async () => {
       try {
-        const next = await readAIPlan(run.id);
+        const next = await readAIPlan(runId);
         if (cancelled) return;
         setRun(next);
         if (next.status !== "generating") {
@@ -91,7 +93,7 @@ export function AIPlanner({ event }: { event: EventRecord }) {
       cancelled = true;
       if (timer) clearTimeout(timer);
     };
-  }, [run?.id, run?.status, polling, loadHistory]);
+  }, [runId, runStatus, polling, loadHistory]);
   const baseline = run?.base_record;
   const proposed = run?.proposed_record;
   const stale =

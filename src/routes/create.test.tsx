@@ -9,7 +9,7 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/components/app-shell", () => ({
   AppShell: ({ children }: { children: React.ReactNode }) => <main>{children}</main>,
 }));
-vi.mock("@/state/events-store", () => ({
+vi.mock("@/state/events-context", () => ({
   useEvents: () => ({ ready: true, createEvent: mocks.create }),
 }));
 beforeEach(() => {

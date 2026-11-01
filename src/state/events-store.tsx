@@ -1,15 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { useEffect, useMemo, useState, useRef, useCallback, type ReactNode } from "react";
 
-import { useAuth } from "./auth";
+import { useAuth } from "./auth-context";
+import { EventsContext, type EventsStore } from "./events-context";
 import { getCloudClient } from "@/lib/cloud/client";
 import {
   createEventsRepository,
@@ -19,40 +11,7 @@ import {
 import { buildSampleEvents, refreshSampleDates } from "@/lib/demo-data";
 import { loadStoredEvents, saveEvents } from "@/lib/storage";
 import { createEventFromBrief, newId } from "@/lib/templates";
-import type { EventBrief, EventRecord, Expense, TaskCategory, VendorStatus } from "@/lib/types";
-
-interface EventsStore {
-  ready: boolean;
-  mode: "demo" | "account";
-  accountError: string | null;
-  saveEvent: (id: string) => Promise<void>;
-  reloadAccount: () => Promise<void>;
-  importLocalDrafts: () => void;
-  getSaveState: (id: string) => "local" | "unsaved" | "saving" | "saved";
-  hasUnsavedChanges: boolean;
-  getRevision: (id: string) => number | undefined;
-  acceptAIResult: (result: StoredEvent, expectedFingerprint: string) => boolean;
-  applyReplan: (record: EventRecord, expectedFingerprint: string) => boolean;
-  storageWarning: string | null;
-  events: EventRecord[];
-  getEvent: (id: string) => EventRecord | undefined;
-  createEvent: (brief: EventBrief) => EventRecord;
-  addExpense: (eventId: string, categoryId: string, expense: Omit<Expense, "id">) => void;
-  deleteExpense: (eventId: string, categoryId: string, expenseId: string) => void;
-  updateAllocation: (eventId: string, categoryId: string, allocatedPaise: number) => void;
-  updateContingency: (eventId: string, contingencyPaise: number) => void;
-  addTask: (
-    eventId: string,
-    task: { title: string; category: TaskCategory; dueDate: string },
-  ) => void;
-  toggleTask: (eventId: string, taskId: string) => void;
-  setVendorStatus: (eventId: string, itemId: string, status: VendorStatus) => void;
-  toggleVendorDone: (eventId: string, itemId: string, done: boolean) => void;
-  toggleIdeaSaved: (eventId: string, ideaId: string) => void;
-  resetToSamples: () => void;
-}
-
-const EventsContext = createContext<EventsStore | null>(null);
+import type { EventRecord } from "@/lib/types";
 
 export function EventsProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
@@ -400,10 +359,4 @@ function Workspace({ children, owner }: { children: ReactNode; owner: string | n
   ]);
 
   return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>;
-}
-
-export function useEvents(): EventsStore {
-  const store = useContext(EventsContext);
-  if (!store) throw new Error("useEvents must be used inside <EventsProvider>");
-  return store;
 }

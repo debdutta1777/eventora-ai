@@ -1,7 +1,8 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import type { Session } from "@supabase/supabase-js";
-import { AuthProvider, useAuth } from "./auth";
+import { AuthProvider } from "./auth";
+import { useAuth } from "./auth-context";
 import { AccountControls } from "@/components/account-controls";
 const mocks = vi.hoisted(() => ({
   getSession: vi.fn(),
@@ -16,7 +17,7 @@ vi.mock("@/lib/cloud/client", () => ({
   cloudConfigured: true,
   getCloudClient: () => (mocks.enabled ? { auth: mocks } : null),
 }));
-vi.mock("./events-store", () => ({
+vi.mock("./events-context", () => ({
   useEvents: () => ({
     mode: "demo",
     ready: true,

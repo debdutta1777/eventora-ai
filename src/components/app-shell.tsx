@@ -12,7 +12,7 @@ import {
   SheetTrigger,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { useEvents } from "@/state/events-store";
+import { useEvents } from "@/state/events-context";
 import { cn } from "@/lib/utils";
 import { EVENT_TYPE_LABELS } from "@/lib/types";
 

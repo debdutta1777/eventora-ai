@@ -36,17 +36,28 @@ export function buildSampleEvents(): EventRecord[] {
   wedding.id = SAMPLE_EVENT_IDS.wedding;
   wedding.isSample = true;
   wedding.sampleOffsetDays = SAMPLE_OFFSET_DAYS.wedding;
-  decorateSample(wedding, [
-    { category: "Venue", expenses: [{ label: "Venue booking advance", amountPaise: 150_000 * 100 }] },
+  decorateSample(
+    wedding,
+    [
+      {
+        category: "Venue",
+        expenses: [{ label: "Venue booking advance", amountPaise: 150_000 * 100 }],
+      },
+      {
+        category: "Catering",
+        expenses: [{ label: "Menu tasting and advance", amountPaise: 35_000 * 100 }],
+      },
+      {
+        category: "Photography",
+        expenses: [{ label: "Booking advance — photography team", amountPaise: 25_000 * 100 }],
+      },
+    ],
     {
-      category: "Catering",
-      expenses: [{ label: "Menu tasting and advance", amountPaise: 35_000 * 100 }],
+      completed: 2,
+      vendorStatuses: { "Review the venue contract for hidden costs": "researching" },
+      savedIdeas: 1,
     },
-    {
-      category: "Photography",
-      expenses: [{ label: "Booking advance — photography team", amountPaise: 25_000 * 100 }],
-    },
-  ], { completed: 2, vendorStatuses: { "Review the venue contract for hidden costs": "researching" }, savedIdeas: 1 });
+  );
 
   const birthday = createEventFromBrief({
     name: "Aarav turns 7",
@@ -64,10 +75,17 @@ export function buildSampleEvents(): EventRecord[] {
   birthday.id = SAMPLE_EVENT_IDS.birthday;
   birthday.isSample = true;
   birthday.sampleOffsetDays = SAMPLE_OFFSET_DAYS.birthday;
-  decorateSample(birthday, [
-    { category: "Venue", expenses: [{ label: "Party hall booking", amountPaise: 6_000 * 100 }] },
-    { category: "Food & cake", expenses: [{ label: "Cake order advance", amountPaise: 2_500 * 100 }] },
-  ], { completed: 1, vendorStatuses: {}, savedIdeas: 1 });
+  decorateSample(
+    birthday,
+    [
+      { category: "Venue", expenses: [{ label: "Party hall booking", amountPaise: 6_000 * 100 }] },
+      {
+        category: "Food & cake",
+        expenses: [{ label: "Cake order advance", amountPaise: 2_500 * 100 }],
+      },
+    ],
+    { completed: 1, vendorStatuses: {}, savedIdeas: 1 },
+  );
 
   const community = createEventFromBrief({
     name: "Rose Colony winter mela",
@@ -85,12 +103,16 @@ export function buildSampleEvents(): EventRecord[] {
   community.id = SAMPLE_EVENT_IDS.community;
   community.isSample = true;
   community.sampleOffsetDays = SAMPLE_OFFSET_DAYS.community;
-  decorateSample(community, [
-    {
-      category: "Venue & permissions",
-      expenses: [{ label: "Ground reservation fee", amountPaise: 15_000 * 100 }],
-    },
-  ], { completed: 1, vendorStatuses: {}, savedIdeas: 2 });
+  decorateSample(
+    community,
+    [
+      {
+        category: "Venue & permissions",
+        expenses: [{ label: "Ground reservation fee", amountPaise: 15_000 * 100 }],
+      },
+    ],
+    { completed: 1, vendorStatuses: {}, savedIdeas: 2 },
+  );
 
   return [wedding, birthday, community];
 }
@@ -106,16 +128,18 @@ function decorateSample(
     const category = event.budget.categories.find((c) => c.name === seed.category);
     if (!category) continue;
     for (const expense of seed.expenses) {
-      category.expenses.push({ id: newId("exp"), label: expense.label, amountPaise: expense.amountPaise });
+      category.expenses.push({
+        id: newId("exp"),
+        label: expense.label,
+        amountPaise: expense.amountPaise,
+      });
     }
   }
 
   const incomplete = event.tasks.filter((t) => !t.completed);
-  incomplete
-    .slice(-options.completed)
-    .forEach((t) => {
-      t.completed = true;
-    });
+  incomplete.slice(-options.completed).forEach((t) => {
+    t.completed = true;
+  });
   for (const [title, status] of Object.entries(options.vendorStatuses)) {
     for (const group of event.vendorGroups) {
       const item = group.items.find((i) => i.title === title);

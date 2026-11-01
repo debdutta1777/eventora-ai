@@ -15,10 +15,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatINR, formatISODate, computeBudgetTotals } from "@/lib/format";
 import { EVENT_TYPE_LABELS } from "@/lib/types";
-import { useEvents } from "@/state/events-store";
+import { useEvents } from "@/state/events-context";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,

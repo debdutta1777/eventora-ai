@@ -1,6 +1,7 @@
 import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { EventsProvider, useEvents } from "./events-store";
+import { EventsProvider } from "./events-store";
+import { useEvents } from "./events-context";
 import { loadStoredEvents } from "@/lib/storage";
 import { createEventFromBrief, newId } from "@/lib/templates";
 import { eventSchema } from "@/lib/schemas";

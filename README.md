@@ -21,14 +21,27 @@ npm run dev
 ```
 
 ```sh
+npm run lint
 npm run typecheck
 npm test
 npm run build
 ```
 
-`npm run check` runs all three checks. The current local automated suite contains 101 tests across 18 files using synthetic fixtures, including actual Postgres migration tests through PGlite. Whole-repository lint and a comprehensive assistive-technology audit remain separate checks.
+`npm run check` requires zero-warning ESLint, strict TypeScript (including unused locals and parameters), all tests and a production build. The automated suite contains 111 tests across 19 files using synthetic fixtures, including actual Postgres migration tests through PGlite. A comprehensive assistive-technology audit remains a separate release check.
 
 The frontend supports public Supabase configuration through the checked-in development defaults or `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` overrides. Set `VITE_DEMO_ONLY=true` to disable accounts.
+
+## Code organization
+
+- `src/routes`: page composition, navigation and route metadata.
+- `src/components/workspace`: focused Overview, Budget, Tasks, Vendors and Ideas tabs, plus expense entry.
+- `src/state/*-context.ts`: typed context contracts and consumer hooks; provider components remain in separate TSX modules.
+- `src/lib`: money/date rules, schema validation, templates and deterministic replanning.
+- `src/lib/cloud`: authenticated persistence and revision-aware saves.
+- `src/lib/ai`: provider adapter, validated proposal domain, request service and client.
+- `supabase/migrations`: versioned database constraints, policies and atomic operations.
+
+UI components call the state/repository contracts; provider credentials and model calls stay behind the authenticated Edge Function. Tests use synthetic fixtures and mocked provider responses; CI does not require a Gemini key.
 
 ## Server setup
 
@@ -46,10 +59,10 @@ See [replanning behavior and tests](docs/REPLANNING.md) for allocation rules, st
 
 ## Repository workflow
 
-This repository contains the consolidated Phase 6 Eventora AI application on main. It was migrated from the development snapshot 7efe66eb0f6040d552ee5380c7ae692c3d6f1a06. The original repository and its phase PRs remain unchanged. This repository has fresh history and is not automatically connected to the old Lovable project.
+This repository contains the consolidated Eventora AI application on main, including Phase 7 maintainability improvements. It was migrated from the development snapshot 7efe66eb0f6040d552ee5380c7ae692c3d6f1a06. The original repository and its phase PRs remain unchanged. This repository has fresh history and is not automatically connected to the old Lovable project.
 
 Use npm and package-lock.json for dependency installation. The UI, templates, account storage, Gemini integration, migrations, tests and CI workflow are included.
 
 ## Submission readiness
 
-See [rubric mapping and release checklist](docs/SUBMISSION.md). Phase 6 adds keyboard/focus improvements, shared exact budget review, wrapping task text, reduced-motion support and a CI workflow. Hosted deployment and comprehensive accessibility testing remain release gates.
+See [rubric mapping and release checklist](docs/SUBMISSION.md). Phase 7 adds focused workspace components, separate context contracts and providers, zero-warning lint in CI, bounded-polling lifecycle tests and accessible expense validation. Verify each deployment on its final origin; comprehensive accessibility testing remains a release gate.

@@ -20,7 +20,7 @@ import {
 } from "@/lib/templates";
 import { EVENT_TYPE_LABELS, PLANNING_PRIORITIES, type EventType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useEvents } from "@/state/events-store";
+import { useEvents } from "@/state/events-context";
 
 export const Route = createFileRoute("/create")({
   component: CreateEvent,

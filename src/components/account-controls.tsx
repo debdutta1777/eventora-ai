@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "@/state/auth";
-import { useEvents } from "@/state/events-store";
+import { useAuth } from "@/state/auth-context";
+import { useEvents } from "@/state/events-context";
 import { getCloudClient } from "@/lib/cloud/client";
 import { loadStoredEvents } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
