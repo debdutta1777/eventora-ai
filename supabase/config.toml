@@ -1,0 +1,4 @@
+project_id = "eventora"
+
+[functions.planner]
+verify_jwt = true
